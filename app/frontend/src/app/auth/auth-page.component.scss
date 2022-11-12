@@ -1,4 +1,4 @@
-@import './src/styles/variables';
+@import '../../styles/variables';
 
 :host {
   height: 100%;
@@ -23,7 +23,7 @@
 
 .auth-page__bg {
   height: 55%;
-  background-image: url('../../../assets/auth-bg.png');
+  background-image: url('../../assets/auth-bg.png');
   background-repeat: no-repeat;
   background-size: cover;
 }

@@ -9,8 +9,7 @@ public class CustomExceptionHandlerMiddleware
 {
     private readonly RequestDelegate _next;
 
-    public CustomExceptionHandlerMiddleware(RequestDelegate next) =>
-        _next = next;
+    public CustomExceptionHandlerMiddleware(RequestDelegate next) => _next = next;
 
     public async Task Invoke(HttpContext context)
     {
