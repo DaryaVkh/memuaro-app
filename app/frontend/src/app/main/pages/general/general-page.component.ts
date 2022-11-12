@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
-import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { ApiService } from '../../../../api/api.service';
 import { MainService } from '../../main.service';
 import {
@@ -15,7 +14,7 @@ import {
   tap
 } from 'rxjs';
 import { QuestionDto, UserDto } from '../../../../api/api.models';
-import { QuestionStatus } from './general-page.models';
+import { ANGULAR_EDITOR_CONFIG_DEFAULT, QuestionStatus } from './general-page.models';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 
 @Component({
@@ -25,26 +24,18 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GeneralPageComponent implements OnDestroy {
-  readonly config: AngularEditorConfig = {
-    editable: true,
-    spellcheck: true,
-    height: 'auto',
-    minHeight: '5rem',
-    placeholder: 'Пишите свой ответ здесь...',
-    translate: 'no',
-    defaultParagraphSeparator: 'p',
-    toolbarHiddenButtons: [['insertVideo', 'insertImage', 'justifyLeft', 'justifyRight', 'justifyCenter', 'justifyFull']],
-    customClasses: []
-  };
+  searchRequest = '';
+
+  readonly config = ANGULAR_EDITOR_CONFIG_DEFAULT;
   readonly questionStatusEnum = QuestionStatus;
 
+  readonly update$ = new Subject<void>();
   readonly user$: Observable<UserDto>;
   readonly loading$ = new BehaviorSubject<boolean>(false);
   readonly questions$: Observable<Record<QuestionStatus, QuestionDto[]>>;
   readonly activeQuestion$ = new BehaviorSubject<QuestionDto | null>(null);
   readonly isActiveQuestionPartlyAnswered$ = new BehaviorSubject<boolean>(false);
 
-  private readonly update$ = new Subject<void>();
   private readonly destroy$ = new Subject<void>();
 
   constructor(private readonly apiService: ApiService,
@@ -58,8 +49,11 @@ export class GeneralPageComponent implements OnDestroy {
       switchMap(() => this.user$),
       switchMap((user) => apiService.getAllQuestionsForUser(user.id)),
       map(({questions}) => {
+        const searchRequest = this.searchRequest.toLowerCase().trim();
         return questions.reduce<Record<QuestionStatus, QuestionDto[]>>((questionsByStatus, question) => {
-          questionsByStatus[question.status ? question.status as QuestionStatus : QuestionStatus.UNANSWERED].push(question);
+          if (question.title.toLowerCase().includes(searchRequest)) {
+            questionsByStatus[question.status ? question.status as QuestionStatus : QuestionStatus.UNANSWERED].push(question);
+          }
           return questionsByStatus;
         }, {
           [QuestionStatus.UNANSWERED]: [],
@@ -74,8 +68,8 @@ export class GeneralPageComponent implements OnDestroy {
 
   getNewQuestion(): void {
     this.user$.pipe(
-      switchMap((user) => this.apiService.getNewQuestion(user.id)),
       tap(() => this.loading$.next(true)),
+      switchMap((user) => this.apiService.getNewQuestion(user.id)),
       take(1),
       takeUntil(this.destroy$)
     ).subscribe(() => this.update$.next());
@@ -88,8 +82,8 @@ export class GeneralPageComponent implements OnDestroy {
 
   saveAnswer(question: QuestionDto): void {
     const newStatus = this.isActiveQuestionPartlyAnswered$.getValue() ? QuestionStatus.PARTLY_ANSWERED : QuestionStatus.ANSWERED;
+    this.loading$.next(true);
     this.apiService.giveAnswer(question.id, {answer: `${question.answer}`, newStatus}).pipe(
-      tap(() => this.loading$.next(true)),
       take(1),
       takeUntil(this.destroy$)
     ).subscribe(() => {
@@ -98,10 +92,15 @@ export class GeneralPageComponent implements OnDestroy {
         'success',
         'Ваш ответ успешно сохранён',
         '',
-        { nzPlacement: 'bottomRight' }
+        {nzPlacement: 'bottomRight'}
       );
       this.activeQuestion$.next(null);
     });
+  }
+
+  filterQuestionsByRequest(): void {
+    this.update$.next();
+    this.activeQuestion$.next(null);
   }
 
   ngOnDestroy(): void {

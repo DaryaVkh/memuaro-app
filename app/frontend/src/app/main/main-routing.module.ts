@@ -12,6 +12,10 @@ const routes: Routes = [
         loadChildren: () => import('./pages/general/general-page.module').then(m => m.GeneralPageModule)
       },
       {
+        path: 'admin',
+        loadChildren: () => import('../admin/admin.module').then(m => m.AdminModule)
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'general'

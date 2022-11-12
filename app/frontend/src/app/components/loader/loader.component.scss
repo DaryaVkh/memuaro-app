@@ -10,13 +10,17 @@
   z-index: 10;
 }
 
-.loader {
+.loader__container {
   position: absolute;
-  transform-origin: center center;
-  animation: rotate 2s linear infinite;
+  transform: translate(-50%, -50%);
   top: 50%;
   left: 50%;
   z-index: 11;
+}
+
+.loader {
+  transform-origin: center center;
+  animation: rotate 2s linear infinite;
   width: max(10vh, 80px);
   height: max(10vh, 80px);
 

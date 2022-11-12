@@ -4,103 +4,67 @@ import { catchError, filter, map, Observable, of, switchMap, tap } from 'rxjs';
 import { HttpOptions, TokensDto } from './api.models';
 import { getHandledResponse, getTokens, getTransformHeaders } from './api.helpers';
 import { Router } from '@angular/router';
-import { setCookie } from '../app/common/functions';
+import { getCookie, setCookie } from '../app/common/functions';
+import jwtDecode from "jwt-decode";
+import { DecodedJwtToken } from "../app/common/interfaces";
 
 @Injectable({
   providedIn: 'root'
 })
 export class GatewayClientService {
   constructor(private readonly http: HttpClient,
-              private readonly router: Router) {}
+              private readonly router: Router) {
+  }
 
   get<T>(commandUrl: string, options?: HttpOptions): Observable<T> {
-    return this.http.get<T>(commandUrl, {
+    const request: Observable<HttpResponse<T>> = this.http.get<T>(commandUrl, {
       ...options,
       observe: 'response',
       headers: getTransformHeaders(options)
-    }).pipe(
-      catchError((response: HttpResponse<T>) => {
-        const status = response.status;
-        if (status === 401) {
-          return this.refreshTokenAndResendRequest().pipe(
-            switchMap((result) => {
-              if (result) {
-                return this.http.get<T>(commandUrl, {
-                  ...options,
-                  observe: 'response',
-                  headers: getTransformHeaders(options)
-                });
-              }
-              return of(null);
-            })
-          );
-        }
-        return of(null);
-      }),
-      filter((response): response is HttpResponse<T> => !!response),
-      map((response) => getHandledResponse(response))
-    );
+    });
+
+    return this.getRequest(request);
   }
 
   post<T>(commandUrl: string, body?: any | null, options?: HttpOptions): Observable<T> {
-    return this.http.post<T>(commandUrl, body, {
+    const request: Observable<HttpResponse<T>> = this.http.post<T>(commandUrl, body, {
       ...options,
       observe: 'response',
       headers: getTransformHeaders(options)
-    }).pipe(
-      catchError((response) => {
-        const status = response.status;
-        if (status === 401) {
-          return this.refreshTokenAndResendRequest().pipe(
-            switchMap((result) => {
-              if (result) {
-                return this.http.post<T>(commandUrl, {
-                  ...options,
-                  observe: 'response',
-                  headers: getTransformHeaders(options)
-                });
-              }
-              return of(null);
-            })
-          );
-        }
-        return of(null);
-      }),
-      filter((response): response is HttpResponse<T> => !!response),
-      map((response) => getHandledResponse(response))
-    );
+    });
+
+    return this.getRequest(request);
   }
 
   patch<T>(commandUrl: string, body: any | null, options?: HttpOptions): Observable<T> {
-    return this.http.patch<T>(commandUrl, body, {
+    const request: Observable<HttpResponse<T>> = this.http.patch<T>(commandUrl, body, {
       ...options,
       observe: 'response',
       headers: getTransformHeaders(options)
-    }).pipe(
-      catchError((response) => {
-        const status = response.status;
-        if (status === 401) {
-          return this.refreshTokenAndResendRequest().pipe(
-            switchMap((result) => {
-              if (result) {
-                return this.http.patch<T>(commandUrl, {
-                  ...options,
-                  observe: 'response',
-                  headers: getTransformHeaders(options)
-                });
-              }
-              return of(null);
-            })
-          );
-        }
-        return of(null);
-      }),
+    });
+
+    return this.getRequest(request);
+  }
+
+  private getRequest<T>(request: Observable<HttpResponse<T>>): Observable<T> {
+    const accessToken = getCookie('accessToken');
+
+    if (!accessToken || (jwtDecode(accessToken) as DecodedJwtToken).exp * 1000 > Date.now()) {
+      return request.pipe(
+        catchError(() => of(null)),
+        filter((response): response is HttpResponse<T> => !!response),
+        map((response) => getHandledResponse(response))
+      );
+    }
+
+    return this.refreshToken().pipe(
+      switchMap((result) => result ? request : of(null)),
       filter((response): response is HttpResponse<T> => !!response),
       map((response) => getHandledResponse(response))
     );
   }
 
-  private refreshTokenAndResendRequest<T>(): Observable<TokensDto | null> {
+  private refreshToken<T>(): Observable<TokensDto | null> {
     return this.http.post<TokensDto>('/api/auth/refresh', getTokens(), {
       headers: {
         'Content-Type': 'application/json',

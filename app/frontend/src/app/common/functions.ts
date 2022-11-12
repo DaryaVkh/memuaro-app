@@ -20,3 +20,7 @@ export function setCookie(cookieName: string, cookieValue: string, expDays: numb
   let expires = 'expires=' + d.toUTCString();
   document.cookie = cookieName + '=' + cookieValue + ';' + expires + ';path=/';
 }
+
+export function deleteCookie(cookieName: string) {
+  document.cookie = `${cookieName}=; Max-Age=0; path=/; domain=` + location.hostname;
+}
