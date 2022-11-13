@@ -17,10 +17,10 @@ export function getCookie(cookieName: string): string {
 export function setCookie(cookieName: string, cookieValue: string, expDays: number): void {
   const d = new Date();
   d.setTime(d.getTime() + (expDays * 24 * 60 * 60 * 1000));
-  let expires = 'expires=' + d.toUTCString();
-  document.cookie = cookieName + '=' + cookieValue + ';' + expires + ';path=/';
+  let expires = `expires=${d.toUTCString()}`;
+  document.cookie = `${cookieName}=${cookieValue};${expires};path=/`;
 }
 
 export function deleteCookie(cookieName: string) {
-  document.cookie = `${cookieName}=; Max-Age=0; path=/; domain=` + location.hostname;
+  document.cookie = `${cookieName}=; Max-Age=0; path=/; domain=${location.hostname}`;
 }
