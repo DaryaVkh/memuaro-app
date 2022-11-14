@@ -14,6 +14,6 @@ export const ANGULAR_EDITOR_CONFIG_DEFAULT: AngularEditorConfig = {
   placeholder: 'Пишите свой ответ здесь...',
   translate: 'no',
   defaultParagraphSeparator: 'p',
-  toolbarHiddenButtons: [['insertVideo', 'insertImage', 'justifyLeft', 'justifyRight', 'justifyCenter', 'justifyFull']],
+  toolbarHiddenButtons: [['insertVideo', 'insertImage', 'justifyLeft', 'justifyRight', 'justifyCenter', 'justifyFull', 'customClasses']],
   customClasses: []
 };

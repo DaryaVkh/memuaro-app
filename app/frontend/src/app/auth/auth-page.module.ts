@@ -11,6 +11,7 @@ import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from 
 import { CLIENT_ID } from './auth-page.models';
 import { SvgIconComponent } from '../components/svg-icon/svg-icon.component';
 import { LoaderModule } from '../components/loader/loader.module';
+import { HeaderComponent } from "../components/header/header.component";
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { LoaderModule } from '../components/loader/loader.module';
     NzButtonModule,
     SvgIconComponent,
     SocialLoginModule,
-    LoaderModule
+    LoaderModule,
+    HeaderComponent
   ],
   providers: [
     {

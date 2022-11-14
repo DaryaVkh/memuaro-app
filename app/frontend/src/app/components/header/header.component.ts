@@ -6,13 +6,13 @@ import { SvgIconComponent } from '../svg-icon/svg-icon.component';
 import { Observable } from 'rxjs';
 import { UserDto } from '../../../api/api.models';
 import { NzDropDownModule } from "ng-zorro-antd/dropdown";
-import { Router } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { deleteCookie } from "../../common/functions";
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, NzPageHeaderModule, NzAvatarModule, SvgIconComponent, NzDropDownModule],
+  imports: [CommonModule, NzPageHeaderModule, NzAvatarModule, SvgIconComponent, NzDropDownModule, RouterLink],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
