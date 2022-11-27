@@ -77,6 +77,9 @@
           (nzOnOk)="addNewQuestion()"
           (nzOnCancel)="closeNewQuestionModal()">
   <ng-container *nzModalContent>
-    <textarea class="new-question-page__question-textarea" nz-input [(ngModel)]="newQuestion"></textarea>
+    <textarea class="new-question-page__question-textarea"
+              nz-input
+              placeholder="Введите текст вопроса"
+              [(ngModel)]="newQuestion"></textarea>
   </ng-container>
 </nz-modal>
