@@ -34,7 +34,7 @@ public class QuestionsController : BaseController
     {
         var userIds = request.UserId.HasValue ? new HashSet<Guid> {request.UserId.Value} : new HashSet<Guid>();
         var globalQuestions = await _globalQuestionRepository.GetGlobalQuestionWithExcept(userIds,
-            request.Categories?.ToHashSet());
+            request.CategoryIds?.ToHashSet());
 
         var globalQuestionsDto = globalQuestions
             .Select(gq => new GlobalQuestionDto(gq))
@@ -45,20 +45,18 @@ public class QuestionsController : BaseController
 
     [HttpGet]
     [Route("new")]
-    public async Task<ActionResult<QuestionDto>> GetNewQuestion([FromQuery] Guid userId)
+    public async Task<ActionResult<QuestionDto>> GetNewQuestion([FromQuery] Guid userId, [FromQuery] Guid globalQuestionId)
     {
         CheckAccessForUser(userId);
 
-        var questions = await _questionRepository.GetForUserAsync(userId);
-        var newGlobalQuestion = await _globalQuestionRepository.GetRandomGlobalQuestionWithExcept(questions.Select(question => question.GlobalQuestionId).ToHashSet());
-
-        if (newGlobalQuestion == null)
-            throw new NotFoundException("There are no more globalQuestions");
+        var globalQuestion = await _globalQuestionRepository.GetAsync(globalQuestionId);
+        if (globalQuestion == null)
+            throw new NotFoundException(nameof(GlobalQuestion), globalQuestionId);
 
         var userQuestion = new Question
         {
-            Id = Guid.NewGuid(), GlobalQuestionId = newGlobalQuestion.Id, Title = newGlobalQuestion.Title,
-            CategoryId = newGlobalQuestion.CategoryId, UserId = userId, Status = Status.Unanswered
+            Id = Guid.NewGuid(), GlobalQuestionId = globalQuestion.Id, Title = globalQuestion.Title,
+            CategoryId = globalQuestion.CategoryId, UserId = userId, Status = Status.Unanswered
         };
 
         await _questionRepository.CreateAsync(userQuestion);

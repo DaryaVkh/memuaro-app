@@ -2,5 +2,5 @@
 
 public class CategoriesDto
 {
-    public List<CategoryDto>? categories { get; set; }
+    public List<CategoryDto>? Categories { get; set; }
 }

@@ -29,7 +29,7 @@ public class CategoriesController : BaseController
             .Select(category => new CategoryDto(category))
             .ToList();
 
-        return Ok(new CategoriesDto {categories = categories});
+        return Ok(new CategoriesDto {Categories = categories});
     }
 
     [HttpGet]

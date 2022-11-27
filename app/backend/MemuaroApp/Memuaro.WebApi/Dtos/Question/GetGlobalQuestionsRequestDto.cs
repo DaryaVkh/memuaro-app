@@ -3,5 +3,5 @@
 public class GetGlobalQuestionsRequestDto
 {
     public Guid? UserId { get; set; }
-    public Guid[]? Categories { get; set; }
+    public Guid[]? CategoryIds { get; set; }
 }
