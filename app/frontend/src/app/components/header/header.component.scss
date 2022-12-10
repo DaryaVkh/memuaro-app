@@ -20,6 +20,7 @@
   align-items: center;
   height: 100%;
   margin: 0;
+  gap: 25px;
 }
 
 .header__user-name {
@@ -27,4 +28,9 @@
   line-height: 22px;
   font-weight: 400;
   color: $color-text;
+}
+
+.header__icon {
+  transform: scale(1.75);
+  width: 25px;
 }

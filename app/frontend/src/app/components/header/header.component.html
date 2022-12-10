@@ -3,9 +3,10 @@
     <app-svg-icon class="header__app-logo" icon="memuaro-logo"></app-svg-icon>
   </nz-page-header-title>
   <nz-page-header-extra *ngIf="user$ | async as user" class="header__user-info clickable">
+    <span class="header__icon" nz-icon nzType="read" nzTheme="outline"></span>
+    <span class="header__icon" nz-icon nzType="setting" nzTheme="outline"></span>
     <a nz-dropdown nzTrigger="click" [nzDropdownMenu]="menu">
       <nz-avatar nz-page-header-avatar [nzSrc]="user.photoUrl"></nz-avatar>
-      <span class="header__user-name">{{user.name}}</span>
     </a>
     <nz-dropdown-menu #menu="nzDropdownMenu">
     </nz-dropdown-menu>
