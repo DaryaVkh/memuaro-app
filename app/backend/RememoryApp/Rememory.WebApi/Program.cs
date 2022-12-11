@@ -13,6 +13,9 @@ using Rememory.WebApi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Rememory.Bot;
+using Rememory.Bot.Settings;
+using Rememory.Persistance.Repositories.NotificationSettingsRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,12 +56,15 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.Configure<DatabaseConfig>(builder.Configuration.GetSection("DatabaseConfig"));
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.Configure<GoogleSettings>(builder.Configuration.GetSection("GoogleSettings"));
+builder.Services.Configure<BotSettings>(builder.Configuration.GetSection("BotSettings"));
 
 builder.Services.AddSingleton<IDatabaseClient, DatabaseClient>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IQuestionRepository, QuestionRepository>();
 builder.Services.AddSingleton<IGlobalQuestionRepository, GlobalQuestionRepository>();
 builder.Services.AddSingleton<ICategoryRepository, CategoryRepository>();
+builder.Services.AddSingleton<INotificationSettingsRepository, NotificationSettingsRepository>();
+builder.Services.AddSingleton<IBot, TelegramBot>();
 builder.Services.AddSingleton<AuthProvider>();
 
 builder.Services.AddAuthentication(item =>

@@ -90,10 +90,10 @@ public class QuestionsController : BaseController
     }
 
     [HttpPatch]
-    [Route("{id}")]
-    public async Task<ActionResult<QuestionDto>> PatchAnswer(string id, [FromBody] AnswerRequestDto request)
+    [Route("{id:guid}")]
+    public async Task<ActionResult<QuestionDto>> PatchAnswer(Guid id, [FromBody] AnswerRequestDto request)
     {
-        var question = await _questionRepository.GetAsync(Guid.Parse(id));
+        var question = await _questionRepository.GetAsync(id);
         if (question == null)
             throw new NotFoundException(nameof(Question), id);
 
