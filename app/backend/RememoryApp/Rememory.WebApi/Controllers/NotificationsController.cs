@@ -21,14 +21,14 @@ public class NotificationsController : BaseController
     }
 
     [HttpPost]
-    [Route("settings")]
-    public async Task<ActionResult<NotificationSettings>> SaveNotificationSettings([FromQuery] Guid userId, [FromBody] SaveNotificationSettingsRequestDto request)
+    [Route("settings/{id:guid}")]
+    public async Task<ActionResult<NotificationSettingsDto>> SaveNotificationSettings(Guid id, [FromBody] NotificationSettingsDto request)
     {
-        CheckAccessForUser(userId);
+        CheckAccessForUser(id);
 
         var notificationSettings = new NotificationSettings
         {
-            Id = userId,
+            Id = id,
             Email = request.Email,
             TelegramName = request.TelegramName,
             PeriodInDays = request.PeriodInDays
