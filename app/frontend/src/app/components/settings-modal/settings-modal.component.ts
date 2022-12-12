@@ -23,7 +23,7 @@ import { MainService } from '../../main/main.service';
 export class SettingsModalComponent {
   @ViewChild(NzModalComponent) modal?: NzModalComponent;
 
-  @Input() isOpen = true;
+  @Input() isOpen = false;
 
   @Output() modalClosed = new EventEmitter<void>();
 
