@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rememory.Auth;
+using Rememory.Email;
 using Rememory.Persistance.Entities;
 using Rememory.Persistance.Repositories.NotificationSettingsRepository;
 using Rememory.WebApi.Dtos.Notifications;
@@ -12,12 +13,15 @@ namespace Rememory.WebApi.Controllers;
 public class NotificationsController : BaseController
 {
     private readonly INotificationSettingsRepository _notificationSettingsRepository;
+    private readonly IEmailClient _emailClient;
     
     public NotificationsController(
         AuthProvider authProvider,
-        INotificationSettingsRepository notificationSettingsRepository) : base(authProvider)
+        INotificationSettingsRepository notificationSettingsRepository,
+        IEmailClient emailClient) : base(authProvider)
     {
         _notificationSettingsRepository = notificationSettingsRepository;
+        _emailClient = emailClient;
     }
 
     [HttpPost]
@@ -35,6 +39,11 @@ public class NotificationsController : BaseController
         };
 
         await _notificationSettingsRepository.CreateOrUpdate(notificationSettings);
+        var message =
+            $"<div>Здравствуйте, {notificationSettings.Email}! Теперь вы будете получать уведомления на эту почту с периодичностью в {notificationSettings.PeriodInDays} дней.</div>" +
+            "<div>Если вы хотите перестать получать уведомления, то перейдите на <a>https://app.rememory.ru</a> и отключите их.</div>";
+
+        await _emailClient.SendMessage(notificationSettings.Email!, message);
 
         return Ok(new NotificationSettingsDto(notificationSettings));
     }
