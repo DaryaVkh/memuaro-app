@@ -30,20 +30,27 @@ public class NotificationsController : BaseController
     {
         CheckAccessForUser(id);
 
+        var currentSettings = await _notificationSettingsRepository.GetAsync(id);
+
         var notificationSettings = new NotificationSettings
         {
             Id = id,
             Email = request.Email,
             TelegramName = request.TelegramName,
-            PeriodInDays = request.PeriodInDays
+            PeriodInDays = request.PeriodInDays,
+            TelegramId = request.TelegramName == currentSettings?.TelegramName ? currentSettings?.TelegramId : null,
+            DateNextNotification = DateTime.UtcNow.Date.AddDays(request.PeriodInDays)
         };
 
         await _notificationSettingsRepository.CreateOrUpdate(notificationSettings);
-        var message =
-            $"<div>Здравствуйте, {notificationSettings.Email}! Теперь вы будете получать уведомления на эту почту с периодичностью в {notificationSettings.PeriodInDays} дней.</div>" +
-            "<div>Если вы хотите перестать получать уведомления, то перейдите на <a>https://app.rememory.ru</a> и отключите их.</div>";
+        if (notificationSettings.Email != null)
+        {
+            var message =
+                $"<div>Здравствуйте, {notificationSettings.Email}! Теперь вы будете получать уведомления на эту почту с периодичностью в {notificationSettings.PeriodInDays} дней.</div>" +
+                "<div>Если вы хотите перестать получать уведомления, то перейдите на <a>https://app.rememory.ru</a> и отключите их.</div>";
 
-        await _emailClient.SendMessage(notificationSettings.Email!, message);
+            await _emailClient.SendMessage(notificationSettings.Email!, message);
+        }
 
         return Ok(new NotificationSettingsDto(notificationSettings));
     }

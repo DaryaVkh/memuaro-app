@@ -17,6 +17,7 @@ using Rememory.Bot.Settings;
 using Rememory.Email;
 using Rememory.Email.Settings;
 using Rememory.Persistance.Repositories.NotificationSettingsRepository;
+using Rememory.WebApi.Notifications;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,6 +99,8 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin();
     });
 });
+
+builder.Services.AddHostedService<NotificationService>();
 
 var app = builder.Build();
 
