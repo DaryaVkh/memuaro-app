@@ -2,5 +2,5 @@
 
 public interface IEmailClient
 {
-    public Task<bool> SendMessage(string email, string message);
+    public Task SendMessage(string email, string message);
 }

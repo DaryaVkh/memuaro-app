@@ -14,7 +14,7 @@ public class EmailClient : IEmailClient
         _emailSettings = emailSettings.Value;
     }
 
-    public async Task<bool> SendMessage(string email, string message)
+    public async Task SendMessage(string email, string message)
     {
         if (_emailSettings.Email == null || _emailSettings.Password == null) return false;
 
@@ -32,18 +32,10 @@ public class EmailClient : IEmailClient
 
         mimeMessage.Body = bodyBuilder.ToMessageBody();
 
-        try
-        {
-            using var client = new SmtpClient();
-            await client.ConnectAsync("smtp.yandex.ru", 465, true);
-            await client.AuthenticateAsync(_emailSettings.Email, _emailSettings.Password);
-            await client.SendAsync(mimeMessage);
-            await client.DisconnectAsync(true);
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        using var client = new SmtpClient();
+        await client.ConnectAsync("smtp.yandex.ru", 465, true);
+        await client.AuthenticateAsync(_emailSettings.Email, _emailSettings.Password);
+        await client.SendAsync(mimeMessage);
+        await client.DisconnectAsync(true);
     }
 }
