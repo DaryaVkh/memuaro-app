@@ -35,8 +35,8 @@ public class NotificationsController : BaseController
         var notificationSettings = new NotificationSettings
         {
             Id = id,
-            Email = request.Email,
-            TelegramName = request.TelegramName,
+            Email = string.IsNullOrEmpty(request.Email) ? null : request.Email,
+            TelegramName = string.IsNullOrEmpty(request.TelegramName) ? null : request.TelegramName,
             PeriodInDays = request.PeriodInDays,
             TelegramId = request.TelegramName == currentSettings?.TelegramName ? currentSettings?.TelegramId : null,
             DateNextNotification = DateTime.UtcNow.Date.AddDays(request.PeriodInDays)
