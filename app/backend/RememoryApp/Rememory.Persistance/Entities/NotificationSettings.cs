@@ -7,5 +7,5 @@ public class NotificationSettings : IDatabaseEntity
     public string? TelegramName { get; set; }
     public string? TelegramId { get; set; }
     public int PeriodInDays { get; set; }
-    public DateTime DateNextNotification { get; set; }
+    public DateTime? DateNextNotification { get; set; }
 }

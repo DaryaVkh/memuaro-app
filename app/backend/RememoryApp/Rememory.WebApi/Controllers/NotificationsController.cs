@@ -38,9 +38,13 @@ public class NotificationsController : BaseController
             Email = string.IsNullOrEmpty(request.Email) ? null : request.Email,
             TelegramName = string.IsNullOrEmpty(request.TelegramName) ? null : request.TelegramName,
             PeriodInDays = request.PeriodInDays,
-            TelegramId = request.TelegramName == currentSettings?.TelegramName ? currentSettings?.TelegramId : null,
-            DateNextNotification = DateTime.UtcNow.Date.AddDays(request.PeriodInDays)
+            TelegramId = request.TelegramName == currentSettings?.TelegramName ? currentSettings?.TelegramId : null
         };
+
+        notificationSettings.DateNextNotification =
+            notificationSettings.Email != null || notificationSettings.TelegramName != null
+                ? DateTime.UtcNow.Date.AddDays(request.PeriodInDays)
+                : null;
 
         await _notificationSettingsRepository.CreateOrUpdate(notificationSettings);
         if (notificationSettings.Email != null)
