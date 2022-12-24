@@ -42,7 +42,7 @@ public class NotificationsController : BaseController
         };
 
         notificationSettings.DateNextNotification =
-            notificationSettings.Email != null || notificationSettings.TelegramName != null
+            notificationSettings.PeriodInDays != 0 && (notificationSettings.Email != null || notificationSettings.TelegramName != null)
                 ? DateTime.UtcNow.AddDays(request.PeriodInDays)
                 : null;
 
