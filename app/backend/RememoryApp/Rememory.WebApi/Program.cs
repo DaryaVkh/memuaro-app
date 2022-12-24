@@ -110,8 +110,6 @@ app.UseSwaggerUI(); // Временно используем всегда
 
 app.UseMiddleware<CustomExceptionHandlerMiddleware>();
 
-app.UseHttpsRedirection();
-
 app.UseCors("AllowAll");
 
 app.UseAuthentication();

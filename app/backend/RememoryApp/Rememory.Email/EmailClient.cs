@@ -16,7 +16,7 @@ public class EmailClient : IEmailClient
 
     public async Task SendMessage(string email, string message)
     {
-        if (_emailSettings.Email == null || _emailSettings.Password == null) return false;
+        if (_emailSettings.Email == null || _emailSettings.Password == null) throw new ArgumentException("Bad email settings");
 
         var mimeMessage = new MimeMessage();
         var from = new MailboxAddress("Rememory.Notifications", "rememory.notifications@yandex.ru");

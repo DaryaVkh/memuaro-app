@@ -31,7 +31,7 @@ public class BotController : BaseController
                 var settings = await _notificationSettingsRepository.GetByTelegramName(update.Message!.From!.Username);
                 if (settings == null)
                 {
-                    await _bot.SendMessage(update.Message!.From!.Id, "Настрой уведомления через Rememory");
+                    await _bot.SendMessage(update.Message!.From!.Id, "Настрой уведомления через Rememory и снова введи /start");
                 }
                 else
                 {
