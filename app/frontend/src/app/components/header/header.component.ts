@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, NgZone } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { ChangeDetectionStrategy, Component, Inject, Input, NgZone } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -7,11 +7,11 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
+import { CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject, map, Observable, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { NotificationSettingsDto, UserDto } from '../../../api/api.models';
 import { ApiService } from '../../../api/api.service';
 import { ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME } from '../../common/constants';
-import { deleteCookie } from '../../common/functions';
 import { LoaderModule } from '../loader/loader.module';
 import { SettingsModalComponent } from '../settings-modal/settings-modal.component';
 import { SvgIconComponent } from '../svg-icon/svg-icon.component';
@@ -52,7 +52,9 @@ export class HeaderComponent {
   constructor(private readonly router: Router,
               private readonly ngZone: NgZone,
               private readonly fb: FormBuilder,
-              private readonly apiService: ApiService) {}
+              private readonly cookieService: CookieService,
+              private readonly apiService: ApiService,
+              @Inject(DOCUMENT) private document: Document) {}
 
   ngOnInit(): void {
     this.isSettingsModalOpen$.pipe(
@@ -72,9 +74,10 @@ export class HeaderComponent {
   }
 
   logout(): void {
-    deleteCookie(ACCESS_TOKEN_COOKIE_NAME);
-    deleteCookie(REFRESH_TOKEN_COOKIE_NAME);
-    this.ngZone.run(() => this.router.navigate(['auth']).then(() => window.location.reload()));
+    const location = this.document.location;
+    this.cookieService.delete(ACCESS_TOKEN_COOKIE_NAME, '/', location.hostname);
+    this.cookieService.delete(REFRESH_TOKEN_COOKIE_NAME, '/', location.hostname);
+    this.ngZone.run(() => this.router.navigate(['auth']).then(() => location.reload()));
   }
 
   saveSettings(settings: NotificationSettingsDto): void {
