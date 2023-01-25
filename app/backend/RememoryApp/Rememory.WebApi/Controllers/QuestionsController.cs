@@ -1,17 +1,16 @@
-﻿using HtmlRendererCore.PdfSharp;
-using Rememory.Auth;
+﻿using Rememory.Auth;
 using Rememory.Persistance.Entities;
 using Rememory.Persistance.Models;
 using Rememory.Persistance.Repositories.GlobalQuestionRepository;
 using Rememory.Persistance.Repositories.QuestionRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PdfSharpCore;
 using Rememory.Email;
 using Rememory.Persistance.Repositories.UserRepository;
 using Rememory.Persistance.Repositories.UserSettingsRepository;
 using Rememory.WebApi.Dtos.Question;
 using Rememory.WebApi.Exceptions;
+using SelectPdf;
 
 namespace Rememory.WebApi.Controllers;
 
@@ -180,12 +179,14 @@ public class QuestionsController : BaseController
             return BadRequest("answers < 1");
 
         var resultString = string.Join(' ', questions);
-        var pdf = PdfGenerator.GeneratePdf(resultString, PageSize.A4);
+        var converter = new HtmlToPdf();
+        var pdf = converter.ConvertHtmlString(resultString);
         using var stream = new MemoryStream();
         pdf.Save(stream);
         var message = $"<p>Адрес пользователя {user.Email}:</p><p>{addressSettings.ToHtml()}</p>";
         await _emailClient.SendMessageWithAttachments(
             _emailClient.EmailSettings.Email ?? "rememory.notifications@yandex.ru", message, stream, "answers.pdf");
+        pdf.Close();
         return Ok();
     }
 
