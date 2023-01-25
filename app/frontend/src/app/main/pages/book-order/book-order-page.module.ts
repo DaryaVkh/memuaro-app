@@ -20,20 +20,20 @@ import { BookOrderPageComponent } from './book-order-page.component';
     BookOrderPageComponent,
     BookOrderFormComponent
   ],
-    imports: [
-        CommonModule,
-        NzLayoutModule,
-        BookOrderPageRoutingModule,
-        ImageComponent,
-        NzWaveModule,
-        NzButtonModule,
-        NzIconModule,
-        NzModalModule,
-        NzInputModule,
-        ReactiveFormsModule,
-        NzToolTipModule,
-        NzNotificationModule,
-        LoaderModule
-    ]
+  imports: [
+    CommonModule,
+    NzLayoutModule,
+    BookOrderPageRoutingModule,
+    ImageComponent,
+    NzWaveModule,
+    NzButtonModule,
+    NzIconModule,
+    NzModalModule,
+    NzInputModule,
+    ReactiveFormsModule,
+    NzToolTipModule,
+    NzNotificationModule,
+    LoaderModule
+  ]
 })
 export class BookOrderPageModule {}
